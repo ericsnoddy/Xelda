@@ -167,9 +167,9 @@ class Player(Entity):
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
 
-        # Attack cooldown
+        # Attack cooldown, including per weapon cooldown from settings.py
         if self.attacking:
-            if current_time - self.attack_time >= self.attack_cooldown:
+            if current_time - self.attack_time >= self.attack_cooldown + weapon_dict[self.weapon]['cooldown']:
                 self.attacking = False
                 self.destroy_attack()
 
@@ -201,6 +201,11 @@ class Player(Entity):
 
         # Aligning the center ensures any change in image dimensions from frame to frame is not noticeable
         self.rect = self.image.get_rect(center = self.hitbox.center)        
+
+    def get_full_weapon_damage(self):
+        base_damage = self.stats['attack']
+        weapon_damage = weapon_dict[self.weapon]['damage']
+        return base_damage + weapon_damage
 
     def update(self):
         self.key_input()

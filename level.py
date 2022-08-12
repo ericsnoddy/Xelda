@@ -107,19 +107,38 @@ class Level:
             self.current_attack.kill()
         self.current_attack = None
 
-    def player_attack_logic(self):
+    def create_magic(self):        
         pass
 
-    def create_magic(self, spell, strength, cost):
-        print(spell)
-        print(strength)
-        print(cost)
+    def player_attack_logic(self):
+        # ignore if there are no attack sprites
+        if self.attacking_sprites:
+            for attack in self.attacking_sprites:
+                # 3rd arg is DOKILL; False b/c we have further logic before deciding that
+                collision_sprites = pygame.sprite.spritecollide(attack, self.attackable_sprites, False)
+                # If any collisions occur...
+                if collision_sprites:
+                    # Iterate list of collisions
+                    for target in collision_sprites:
+                        if target.sprite_type == 'flora':
+                            target.kill()
+                        # Could differentiate, but for now all other attackables are "else"
+                        else:
+                            # 'attack' sprite from beginning if statement
+                            target.receive_damage(self.player, attack.sprite_type)
+
+                        
+
+
+
+    
 
     def run(self):
         # Draw and update with custom draw; no args needed for update because we already have the display_surface
         self.visible_sprites.custom_draw(self.player)
         self.visible_sprites.update()
         self.visible_sprites.enemy_update(self.player)
+        self.player_attack_logic()
         self.ui.display_hud(self.player)
 
 # This custom Group acts as our camera, sorted by Y-coord so we can add a bit of overlap for illusion of depth

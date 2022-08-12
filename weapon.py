@@ -6,6 +6,9 @@ class Weapon(pygame.sprite.Sprite):
     def __init__(self, player, groups):
         super().__init__(groups)
 
+        # sprite_type for attack collision in level.py
+        self.sprite_type = 'weapon'
+
         # Status is always player direction + optional "_string"; we can split off the optional string
         direction = player.status.split('_')[0]
 

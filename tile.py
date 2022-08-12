@@ -18,7 +18,6 @@ class Tile(pygame.sprite.Sprite):
 		else:
 			self.rect = self.image.get_rect(topleft = position)
 
-
 		# Our hitbox will be slightly smaller than the image rectangle; overlap provides illusion of depth
-		# We also attach the hitbox to the sprite rect.
+		# We attach the hitbox to the sprite rect. This all llows player to walk behind boundary objects.
 		self.hitbox = self.rect.inflate(0, -10)
