@@ -65,9 +65,11 @@ class Enemy(Entity):
         distance = self.scope_player(player)[0]       
 
         if distance <= self.attack_radius and self.can_attack:
+            # ensures attacking always starts frame 1
             if self.status != 'attack':
                 self.frame_index = 0
             self.status = 'attack'
+            # timer
             self.attack_time = pygame.time.get_ticks()
         elif distance <= self.notice_radius:
             self.status = 'move'

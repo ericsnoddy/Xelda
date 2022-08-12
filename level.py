@@ -17,12 +17,14 @@ class Level:
         # This is a useful function to avoid having to pass the surface through the __init__ function input.
         self.display_surface = pygame.display.get_surface()
 
-        # Sprite group setup; required by pygame.sprite.Sprite. Ours are custom.
+        # Sprite group setup; required by pygame.sprite.Sprite. I customize one as a "camera"
         self.visible_sprites = YSortedCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
 
         # For magic/weapon attack sprites
         self.current_attack = None
+        self.attacking_sprites = pygame.sprite.Group()
+        self.attackable_sprites = pygame.sprite.Group()
 
         # Sprite setup
         self.create_map()
@@ -60,7 +62,13 @@ class Level:
                         if tile_style == "flora":
                             # A flora Tile is collidable and visible
                             rand_flora_surface = choice(graphics["flora"])
-                            Tile((x,y), [self.visible_sprites, self.obstacle_sprites], "flora", rand_flora_surface)
+                            Tile((x,y), 
+                                [self.visible_sprites, 
+                                self.obstacle_sprites, 
+                                self.attackable_sprites], 
+                                "flora", 
+                                rand_flora_surface
+                            )
                         if tile_style == "object":
                             # An object Tile is collidable and visible
                             # Object filenames conveniently sync with values in the csv, so we can use indexes to draw them.
@@ -72,8 +80,7 @@ class Level:
                             # HERE IS OUR PLAYER ENTITY drawn on top of all but enemies
                             # Python FYI: we are passing the function create_attack(), not calling it, so no '( )'
                             # This is so Player() has access to Weapon(), but both remain a sub-routine of Level()
-                                self.player = Player(
-                                    (x,y),
+                                self.player = Player((x,y),
                                     [self.visible_sprites],
                                     self.obstacle_sprites, 
                                     self.create_attack, 
@@ -86,16 +93,22 @@ class Level:
                                 elif col == '392': enemy_name ='raccoon'
                                 else: enemy_name = 'squid'
                                 
-                                Enemy(enemy_name, (x,y), [self.visible_sprites], self.obstacle_sprites)
+                                Enemy(enemy_name, (x,y), 
+                                    [self.visible_sprites, self.attackable_sprites], 
+                                    self.obstacle_sprites
+                                )
 
     def create_attack(self):
-        self.current_attack = Weapon(self.player, [self.visible_sprites])
+        self.current_attack = Weapon(self.player, [self.visible_sprites, self.attacking_sprites])
 
     def destroy_attack(self):
         if self.current_attack:
             # Sprite.kill() removes Sprite from (visible_) Group; for next DISPLAY update 
             self.current_attack.kill()
         self.current_attack = None
+
+    def player_attack_logic(self):
+        pass
 
     def create_magic(self, spell, strength, cost):
         print(spell)
