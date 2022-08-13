@@ -6,7 +6,7 @@ from entity import Entity
 
 class Player(Entity):
     # position is (x,y)-topleft; groups is list of sprite groups Player belongs to; obstacle_sprites for checking collision
-    def __init__(self, position, groups, obstacle_sprites, create_attack, destroy_attack, create_magic):
+    def __init__(self, position, groups, obstacle_sprites, create_attack_func, destroy_attack_func, create_magic_func):
         # Inherit our Player __init__ from Sprite class
         super().__init__(groups)
 
@@ -46,8 +46,8 @@ class Player(Entity):
 
         # WEAPONS
         # We can manipulate passed functions as objects without (), at expense of readability 
-        self.create_attack = create_attack
-        self.destroy_attack = destroy_attack
+        self.create_attack_func = create_attack_func
+        self.destroy_attack_func = destroy_attack_func
             # timer
         self.can_switch_weapon = True
         self.switch_cooldown = 200
@@ -58,7 +58,7 @@ class Player(Entity):
         self.weapon = list(weapon_dict.keys())[self.weapon_index]
 
         # MAGIC
-        self.create_magic = create_magic
+        self.create_magic_func = create_magic_func
         # self.destroy_magic = destroy_magic
         self.can_switch_magic = True
         self.switch_magic_time = None
@@ -83,33 +83,47 @@ class Player(Entity):
         if not self.attacking:    
             # Get all the key presses
             keys = pygame.key.get_pressed()
+            
+            # Player controls are editable in settings.py
+            """
+             = key.key_code('up')
+             = key.key_code('down')
+             = key.key_code('left')
+             = key.key_code('right')
+             = key.key_code('space')
+             = key.key_code('left control')
+             = key.key_code('e')
+             = key.key_code('q')
+             = key.key_code('tab')
+            
+            """
 
             # Movement input
-            if keys[pygame.K_UP]:
+            if keys[up_key]:
                 self.direction.y = -1
                 self.status = 'up'
-            elif keys[pygame.K_DOWN]:
+            elif keys[down_key]:
                 self.direction.y = 1
                 self.status = 'down'
             else:
                 self.direction.y = 0
-            if keys[pygame.K_LEFT]:
+            if keys[left_key]:
                 self.direction.x = -1
                 self.status = 'left'
-            elif keys[pygame.K_RIGHT]:
+            elif keys[right_key]:
                 self.direction.x = 1
                 self.status = 'right'
             else:
                 self.direction.x = 0
 
             # Attack input; see cooldown()
-            if keys[pygame.K_SPACE]:
+            if keys[weapon_attack_key]:
                 self.attacking = True
                 self.attack_time = pygame.time.get_ticks()
-                self.create_attack()
+                self.create_attack_func()
 
             # Cycle to previous/next weapon
-            if keys[pygame.K_e] and self.can_switch_weapon:
+            if keys[cycle_weapon_key] and self.can_switch_weapon:
                 self.switch_time = pygame.time.get_ticks()
                 
                 # My solution for looping to the beginning of a list
@@ -124,17 +138,17 @@ class Player(Entity):
                 self.can_switch_weapon = False           
 
             # Magic input; see cooldown()
-            if keys[pygame.K_LCTRL]:
+            if keys[magic_cast_key]:
                 self.attacking = True
                 self.attack_time = pygame.time.get_ticks()
                     # magic_dict from settings.py; magic attribute from self.stats
                 spell = list(magic_dict.keys())[self.magic_index]
                 strength = list(magic_dict.values())[self.magic_index]['strength'] + self.stats['magic']
                 cost = list(magic_dict.values())[self.magic_index]['cost']
-                self.create_magic(spell, strength, cost)
+                self.create_magic_func(spell, strength, cost)
 
             # Cycle to previous/next spell
-            if keys[pygame.K_q] and self.can_switch_magic:
+            if keys[cycle_magic_key] and self.can_switch_magic:
                 self.switch_magic_time = pygame.time.get_ticks()                
                 try:
                     self.magic_index += 1
@@ -177,7 +191,7 @@ class Player(Entity):
         if self.attacking:
             if current_time - self.attack_time >= self.attack_cooldown + weapon_dict[self.weapon]['cooldown']:
                 self.attacking = False
-                self.destroy_attack()
+                self.destroy_attack_func()
 
         # Switch weapon cooldown
         if not self.can_switch_weapon:

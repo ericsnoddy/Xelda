@@ -1,10 +1,18 @@
+from pygame import key
 from os import path
 
-"""
-SPACE: Weapon attack
-LCTRL: Magic attack
-Q: Cycle weapon
-"""
+
+# Set Controls - Use key_code() with description (for readability). Could also import pygame.locals for key constants; if so
+# see pygame.key.get_pressed() doc for list: http://www.pygame.org/docs/ref/key.html#pygame.key.get_pressed
+up_key = key.key_code('up')
+down_key = key.key_code('down')
+left_key = key.key_code('left')
+right_key = key.key_code('right')
+weapon_attack_key = key.key_code('space')
+magic_cast_key = key.key_code('left control')
+cycle_weapon_key = key.key_code('e')
+cycle_magic_key = key.key_code('q')
+upgrade_gui_key = key.key_code('tab')
 
 # game setup
 WIDTH    = 1280	

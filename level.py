@@ -18,6 +18,7 @@ class Level:
         # Get a reference to the currently set display surface
         # This is a useful function to avoid having to pass the surface through the __init__ function input.
         self.display_surface = pygame.display.get_surface()
+        self.game_paused = False
 
         # Sprite group setup; required by pygame.sprite.Sprite. I customize one as a "camera"
         self.visible_sprites = YSortedCameraGroup()
@@ -89,9 +90,9 @@ class Level:
                                 self.player = Player((x,y),
                                     [self.visible_sprites],
                                     self.obstacle_sprites, 
-                                    self.create_attack,   # Don't add () when passing functions
-                                    self.destroy_attack,  # () calls the function, not what we want
-                                    self.create_magic
+                                    self.create_attack_func,   # Don't add () when passing functions
+                                    self.destroy_attack_func,  # () calls the function, not what we want
+                                    self.create_magic_func
                                 )
                             else:
                                 if col == '390': enemy_name = 'bamboo'   # Numeric labels are from level editor csv output
@@ -102,21 +103,21 @@ class Level:
                                 Enemy(enemy_name, (x,y), 
                                     [self.visible_sprites, self.attackable_sprites], 
                                     self.obstacle_sprites,
-                                    self.damage_player,  # Don't add () when passing functions
-                                    self.trigger_death_particles,
-                                    self.reward_player
+                                    self.damage_player_func,  # Don't add () when passing functions
+                                    self.trigger_death_particles_func,
+                                    self.reward_player_func   # _func tag is for readability 
                                 )
 
-    def create_attack(self):
+    def create_attack_func(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites, self.attacking_sprites])
 
-    def destroy_attack(self):
+    def destroy_attack_func(self):
         if self.current_attack:
             # Sprite.kill() removes Sprite from (visible_) Group; for next DISPLAY update 
             self.current_attack.kill()
         self.current_attack = None
 
-    def create_magic(self, style, cost, strength):        
+    def create_magic_func(self, style, cost, strength):        
         if style == 'heal':
             self.magic_player.heal(self.player, cost, strength, [self.visible_sprites])
         if style == 'flame':
@@ -143,26 +144,38 @@ class Level:
                             # 'attack' sprite from the key of 1st for-loop
                             target.receive_damage(self.player, attack.sprite_type)
 
-    def damage_player(self, damage, attack_type):
+    def damage_player_func(self, damage, attack_type):
         if self.player.vulnerable:
             self.player.health -= damage
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
             self.animation_player.create_particles(self.player.rect.center, attack_type, [self.visible_sprites])
 
-    def trigger_death_particles(self, position, particle_type):
+    def trigger_death_particles_func(self, position, particle_type):
         self.animation_player.create_particles(position, particle_type, self.visible_sprites)
 
-    def reward_player(self, amount):
+    def reward_player_func(self, amount):
         self.player.exp += amount
 
+    def upgrade_GUI(self):
+        # toggle pause
+        self.game_paused = not self.game_paused
+
     def run(self):
-            # Draw and update with custom draw; no args needed for update because we already have the display_surface
-            self.visible_sprites.custom_draw(self.player)
+        self.visible_sprites.custom_draw(self.player)
+        self.ui.display_hud(self.player)
+
+        if self.game_paused:
+            pass
+            # Display upgrade GUI # Do not update sprites
+        else:
+            # Draw and update with custom draw; no args needed for update because we already have the display_surface            
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
-            self.ui.display_hud(self.player)
+
+
+            
 
 class YSortedCameraGroup(pygame.sprite.Group):
 # This custom Group acts as our camera, sorted by Y-coord so we can add a bit of overlap for illusion of depth

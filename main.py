@@ -22,10 +22,17 @@ class Game:
         # Game loop
         while True:
             # Event loop
+            # Pygame records every 'event' per loop, such as key presses and mouse clicks
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
+                # We put our upgrade GUI in main because it's a major interrupting overlay
+                # And it's easy to run per event
+                if event.type == pygame.KEYDOWN:
+                    if event.key == upgrade_gui_key: # from settings.py
+                        self.level.upgrade_GUI()
 
             # black background
             self.DISPLAY.fill('black')

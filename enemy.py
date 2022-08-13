@@ -5,7 +5,7 @@ from support import *
 from particles import AnimationPlayer
 
 class Enemy(Entity):
-    def __init__(self, enemy_name, position, groups, obstacle_sprites, damage_player, trigger_death_particles, reward_player):
+    def __init__(self, enemy_name, position, groups, obstacle_sprites, damage_player_func, trigger_death_particles_func, reward_player_func):
 
         # general setup
         super().__init__(groups)
@@ -35,21 +35,21 @@ class Enemy(Entity):
         self.attack_type = enemy_info['attack_type']
 
         # Experience
-        self.reward_player = reward_player  # This object is a passed function from level.py
+        self.reward_player_func = reward_player_func  # This object is a passed function from level.py
 
         # player interaction / cooldown timer
         self.can_attack = True
-        self.attack_cooldown = 400
-        self.attack_time = None
-        self.damage_player = damage_player  # Making an object of a function
+        self.attack_cooldown = 400  # ms
+        self.attack_time = None     # No need to initialize with a value
+        self.damage_player_func = damage_player_func  # Making an object of a function
 
         # invincibility timer - Otherwise we attack 60x per second due to FPS
         self.vulnerable = True
         self.hit_time = None
-        self.hit_duration = 300
+        self.hit_duration = 300     # ms
 
         # particles/animation
-        self.trigger_death_particles = trigger_death_particles
+        self.trigger_death_particles_func = trigger_death_particles_func
 
     def import_graphics(self, name):
         self.animations = { 'idle': [], 'move': [], 'attack': [] }
@@ -93,7 +93,7 @@ class Enemy(Entity):
             # start timer
             self.attack_time = pygame.time.get_ticks()
             # input amount and type, health is subtracted if player vulnerable and hit
-            self.damage_player(self.attack_damage, self.attack_type)
+            self.damage_player_func(self.attack_damage, self.attack_type)
     
         elif self.status == 'move':
             self.direction = self.scope_player(player)[1]
@@ -166,13 +166,13 @@ class Enemy(Entity):
         if self.health <= 0:
             # kill() removes the sprite from the sprite group and that's it; apparently it still has a position before draw update
             self.kill()
-            self.trigger_death_particles(self.rect.center, self.enemy_name)
+            self.trigger_death_particles_func(self.rect.center, self.enemy_name)
 
             # reward the player
-            self.reward_player(self.exp)
+            self.reward_player_func(self.exp)
 
     def update(self):
-        self.hit_reaction()  # recoil
+        self.hit_reaction()
         self.move(self.speed)
         self.animate()
         self.check_death()
