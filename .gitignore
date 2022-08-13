@@ -2,7 +2,7 @@
 *.log
 
 # Ignore compile cache
-__pycache__/
+pycache
 
 # Ignore my scratch pad
 test.py
