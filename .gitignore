@@ -1,0 +1,8 @@
+# Ignore all logs
+*.log
+
+# Ignore compile cache
+/__pycache__
+
+# Ignore my scratch pad
+test.py
