@@ -11,6 +11,17 @@ class UI:
         self.healthbar_rect = pygame.Rect( 20,10, HEALTH_BAR_WIDTH, BAR_HEIGHT )
         self.energybar_rect = pygame.Rect( 20, 10 + BAR_HEIGHT + BAR_SEPARATION, ENERGY_BAR_WIDTH, BAR_HEIGHT )
 
+        # Load graphics data into memory so we don't have to keep referencing a dict, hurting performance
+        self.weapon_graphics = []
+        for weapon in weapon_dict.values():
+            weapon = pygame.image.load(weapon['graphic']).convert_alpha()
+            self.weapon_graphics.append(weapon)
+        
+        self.magic_graphics = []
+        for magic in magic_dict.values():
+            magic = pygame.image.load(magic['graphic']).convert_alpha()
+            self.magic_graphics.append(magic)
+
     def show_bar(self, current_amt, max_amt, bg_rect, color):
         # Stat to pixel ratio conversion - Rect() will auto convert float to int
         current_rect = bg_rect.copy()
@@ -57,12 +68,9 @@ class UI:
         wtop = self.display_surface.get_size()[1] - 100
         bg_rect = self.select_box(wleft, wtop, has_switched) # Weapon
 
-        # Path is conveniently included in weapon_dict under 'graphic'
-        key = list(weapon_dict.keys())[weapon_index]
-        fullpng_path = weapon_dict[key]['graphic']
-
-        weapon_surf = pygame.image.load(fullpng_path).convert_alpha()
+        weapon_surf = self.weapon_graphics[weapon_index]
         weapon_rect = weapon_surf.get_rect(center = bg_rect.center)
+
         self.display_surface.blit(weapon_surf, weapon_rect)
 
     def magic_overlay(self, magic_index, has_switched):
@@ -71,10 +79,7 @@ class UI:
         mtop = self.display_surface.get_size()[1] - (ITEM_BOX_SIZE * 2)
         bg_rect = self.select_box(mleft, mtop, has_switched) # Magic selection
 
-        key = list(magic_dict.keys())[magic_index]
-        fullpng_path = magic_dict[key]['graphic']
-
-        magic_surf = pygame.image.load(fullpng_path).convert_alpha()
+        magic_surf = self.magic_graphics[magic_index]
         magic_rect = magic_surf.get_rect(center = bg_rect.center)
         self.display_surface.blit(magic_surf, magic_rect)
 

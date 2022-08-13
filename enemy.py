@@ -2,9 +2,10 @@ import pygame
 from entity import Entity
 from settings import *
 from support import *
+from particles import AnimationPlayer
 
 class Enemy(Entity):
-    def __init__(self, enemy_name, position, groups, obstacle_sprites, damage_player):
+    def __init__(self, enemy_name, position, groups, obstacle_sprites, damage_player, trigger_death_particles):
 
         # general setup
         super().__init__(groups)
@@ -43,6 +44,9 @@ class Enemy(Entity):
         self.vulnerable = True
         self.hit_time = None
         self.hit_duration = 300
+
+        # particles/animation
+        self.trigger_death_particles = trigger_death_particles
 
     def import_graphics(self, name):
         self.animations = { 'idle': [], 'move': [], 'attack': [] }
@@ -138,7 +142,7 @@ class Enemy(Entity):
         # We have to slow this down; else 60x a second
         if self.vulnerable:
             if attack_type == 'weapon':
-                self.health -= player.get_full_weapon_damage()                
+                self.health -= player.get_full_weapon_damage() 
             else:
                 # magic damage
                 pass
@@ -155,9 +159,11 @@ class Enemy(Entity):
             self.direction *= -(self.recoil)
 
     def check_death(self):
-        # "self" is a sprite, which we kill
+        # "self" is a sprite, which we kill after creating a death animation
         if self.health <= 0:
+            # kill() removes the sprite from the sprite group and that's it; apparently it still has a position before draw update
             self.kill()
+            self.trigger_death_particles(self.rect.center, self.enemy_name)
 
     def update(self):
         self.hit_reaction()  # recoil

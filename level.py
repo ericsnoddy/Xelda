@@ -1,6 +1,6 @@
 import pygame
 from os import path
-from random import choice
+from random import choice, randint
 from settings import *
 from tile import Tile
 from player import Player
@@ -100,7 +100,8 @@ class Level:
                                 Enemy(enemy_name, (x,y), 
                                     [self.visible_sprites, self.attackable_sprites], 
                                     self.obstacle_sprites,
-                                    self.damage_player  # Don't add () when passing functions
+                                    self.damage_player,  # Don't add () when passing functions
+                                    self.trigger_death_particles
                                 )
 
     def create_attack(self):
@@ -126,21 +127,25 @@ class Level:
                     # Iterate list of collisions
                     for target in collision_sprites:
                         if target.sprite_type == 'flora':
-                            # spawn particles
-                            self.animation_player.create_flora_particles(target.rect.center, [self.visible_sprites])
+                            # spawn randomly-multiple particles; we offset position to align animation where it looks best (trial and error)
+                            position = target.rect.center - pygame.math.Vector2(0,65)
+                            for _ in range(randint(3,5)): # iterate (spawn leafs) 2-4 times
+                                self.animation_player.create_flora_particles(position, [self.visible_sprites])
                             target.kill()
                         # Could differentiate enemies, but for now all other attackables are "else"
                         else:
                             # 'attack' sprite from the key of 1st for-loop
                             target.receive_damage(self.player, attack.sprite_type)
 
-    def damage_player(self, amount, attack_type):
+    def damage_player(self, damage, attack_type):
         if self.player.vulnerable:
-            self.player.health -= amount
+            self.player.health -= damage
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
+            self.animation_player.create_particles(self.player.rect.center, attack_type, [self.visible_sprites])
 
-            #spawn particles
+    def trigger_death_particles(self, position, particle_type):
+        self.animation_player.create_particles(position, particle_type, self.visible_sprites)
 
     def run(self):
             # Draw and update with custom draw; no args needed for update because we already have the display_surface

@@ -25,8 +25,7 @@ class Player(Entity):
 
         # PLAYER STATS
         self.stats = { 'maxhealth': 100, 'maxenergy': 100, 'attack': 10, 'magic': 4, 'speed': 5 }
-        #self.health = self.stats['maxhealth']
-        self.health = 75
+        self.health = self.stats['maxhealth']
         self.energy = self.stats['maxenergy']
         self.exp = 1130
             # self.speed is a scalar velocity we will multiply with the direction vector
