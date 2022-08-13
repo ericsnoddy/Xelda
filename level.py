@@ -83,8 +83,8 @@ class Level:
                                 self.player = Player((x,y),
                                     [self.visible_sprites],
                                     self.obstacle_sprites, 
-                                    self.create_attack, 
-                                    self.destroy_attack,
+                                    self.create_attack,   # Don't add () when passing functions
+                                    self.destroy_attack,  # () calls the function, not what we want
                                     self.create_magic
                                 )
                             else:
@@ -95,7 +95,8 @@ class Level:
                                 
                                 Enemy(enemy_name, (x,y), 
                                     [self.visible_sprites, self.attackable_sprites], 
-                                    self.obstacle_sprites
+                                    self.obstacle_sprites,
+                                    self.damage_player  # Don't add () when passing functions
                                 )
 
     def create_attack(self):
@@ -127,11 +128,13 @@ class Level:
                             # 'attack' sprite from beginning if statement
                             target.receive_damage(self.player, attack.sprite_type)
 
-                        
+    def damage_player(self, amount, attack_type):
+        if self.player.vulnerable:
+            self.player.health -= amount
+            self.player.vulnerable = False
+            self.player.hurt_time = pygame.time.get_ticks()
 
-
-
-    
+            #spawn particles    
 
     def run(self):
         # Draw and update with custom draw; no args needed for update because we already have the display_surface

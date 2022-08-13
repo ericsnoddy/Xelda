@@ -37,6 +37,11 @@ class Player(Entity):
         self.attack_cooldown = 400
         self.attack_time = None
 
+        # Invulnerability timer
+        self.vulnerable = True
+        self.hurt_time = None
+        self.invulnerability_duration = 500
+
         # WEAPONS
         # We can manipulate passed functions as objects without (), at expense of readability 
         self.create_attack = create_attack
@@ -57,8 +62,7 @@ class Player(Entity):
         self.switch_magic_time = None
         self.magic_index = 0
         self.magic = list(magic_dict.keys())[self.magic_index]
-
-    
+        
         # For collision calculation; these sprites may or may not be visible
         self.obstacle_sprites = obstacle_sprites
  
@@ -183,6 +187,11 @@ class Player(Entity):
             if current_time - self.switch_magic_time >= self.switch_cooldown:
                 self.can_switch_magic = True
 
+        # Period of invulnerability after taking hit
+        if not self.vulnerable:
+            if current_time - self.hurt_time >= self.invulnerability_duration:
+                self.vulnerable = True
+
     def animate(self):
         # Assign image files (frames of animation) from import_player_assets() to list
         frames = self.animations[self.status]
@@ -200,7 +209,15 @@ class Player(Entity):
         self.image = frames[int(self.frame_index)]
 
         # Aligning the center ensures any change in image dimensions from frame to frame is not noticeable
-        self.rect = self.image.get_rect(center = self.hitbox.center)        
+        self.rect = self.image.get_rect(center = self.hitbox.center)
+
+        # Flicker if invulnerable (player hit by enemy)
+        if not self.vulnerable:
+            alpha = self.wave_value()
+            self.image.set_alpha(alpha)
+        else:
+            # don't flicker; return to default opaque if transparent
+            self.image.set_alpha(255)  # Full opaque
 
     def get_full_weapon_damage(self):
         base_damage = self.stats['attack']

@@ -1,4 +1,5 @@
 import pygame
+from math import sin
 
 # For functions that enemies and the player have in common
 class Entity(pygame.sprite.Sprite):
@@ -48,3 +49,12 @@ class Entity(pygame.sprite.Sprite):
                         self.hitbox.bottom = sprite.hitbox.top
                     if self.direction.y < 0: # moving up, collision likely from the top
                         self.hitbox.top = sprite.hitbox.bottom
+
+    def wave_value(self):
+        # Create a sine wave (seeded by system time) to use as an oscillator for flickering animation
+        # I would never, ever have thought of this solution
+        sin_value = sin(pygame.time.get_ticks())
+        if sin_value >= 0:
+            return 255  # Full opaque
+        else:
+            return 0  # Full transparent

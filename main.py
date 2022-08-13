@@ -30,7 +30,7 @@ class Game:
             # black background
             self.DISPLAY.fill('black')
 
-            # Run our initialized level
+            # Run our initial ized level
             self.level.run()
 
             # Update the screen for the next frame 

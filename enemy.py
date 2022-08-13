@@ -4,7 +4,7 @@ from settings import *
 from support import *
 
 class Enemy(Entity):
-    def __init__(self, enemy_name, position, groups, obstacle_sprites):
+    def __init__(self, enemy_name, position, groups, obstacle_sprites, damage_player):
 
         # general setup
         super().__init__(groups)
@@ -28,7 +28,7 @@ class Enemy(Entity):
         self.exp = enemy_info['exp']
         self.speed = enemy_info['speed']
         self.attack_damage = enemy_info['damage']
-        self.resistance = enemy_info['recoil']
+        self.recoil = enemy_info['recoil']
         self.attack_radius = enemy_info['attack_radius']
         self.notice_radius = enemy_info['notice_radius']
         self.attack_type = enemy_info['attack_type']
@@ -37,6 +37,7 @@ class Enemy(Entity):
         self.can_attack = True
         self.attack_cooldown = 400
         self.attack_time = None
+        self.damage_player = damage_player  # Making an object of a function
 
         # invincibility timer - Otherwise we attack 60x per second due to FPS
         self.vulnerable = True
@@ -74,8 +75,7 @@ class Enemy(Entity):
             if self.status != 'attack':
                 self.frame_index = 0
             self.status = 'attack'
-            # timer
-            self.attack_time = pygame.time.get_ticks()
+            
         elif distance <= self.notice_radius:
             self.status = 'move'
         else:
@@ -83,7 +83,11 @@ class Enemy(Entity):
 
     def actions(self, player):
         if self.status == 'attack':
-            pass
+            # start timer
+            self.attack_time = pygame.time.get_ticks()
+            # input amount and type, health is subtracted if player vulnerable and hit
+            self.damage_player(self.attack_damage, self.attack_type)
+    
         elif self.status == 'move':
             self.direction = self.scope_player(player)[1]
         else:
@@ -105,11 +109,20 @@ class Enemy(Entity):
             self.frame_index = 0
         
         # Set the image and update the rect. Converting float to int controls the speed, ensures int index.
-        # Very clever way to control animation speed
+        # Clever way to control animation speed
         self.image = frames[int(self.frame_index)]
 
         # Aligning the center ensures any change in image dimensions from frame to frame is not noticeable
-        self.rect = self.image.get_rect(center = self.hitbox.center)        
+        self.rect = self.image.get_rect(center = self.hitbox.center)
+
+        # Ignore if enemy is attackable (yet to be hit)
+        if not self.vulnerable:
+            # flicker
+            alpha = self.wave_value()
+            self.image.set_alpha(alpha)
+        else:
+            # don't flicker
+            self.image.set_alpha(255)  # Full opaque
 
     def cooldown(self):
         current_time = pygame.time.get_ticks()
@@ -121,18 +134,25 @@ class Enemy(Entity):
             if current_time - self.hit_time >= self.hit_duration:
                 self.vulnerable = True
 
-
     def receive_damage(self, player, attack_type):
         # We have to slow this down; else 60x a second
         if self.vulnerable:
             if attack_type == 'weapon':
-                self.health -= player.get_full_weapon_damage()
+                self.health -= player.get_full_weapon_damage()                
             else:
                 # magic damage
                 pass
+        
         # timer stuff
         self.hit_time = pygame.time.get_ticks()
         self.vulnerable = False
+
+    def hit_reaction(self):
+        # Prevent recoil if enemy is attackable
+        if not self.vulnerable:
+            # Negating a vector creates a vector in the opposite direction
+            # Effect magnitude of recoil per enemy_dict in settings.py, see __init__()
+            self.direction *= -(self.recoil)
 
     def check_death(self):
         # "self" is a sprite, which we kill
@@ -140,6 +160,7 @@ class Enemy(Entity):
             self.kill()
 
     def update(self):
+        self.hit_reaction()  # recoil
         self.move(self.speed)
         self.animate()
         self.check_death()
