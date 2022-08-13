@@ -3,6 +3,7 @@
 
 # Ignore compile cache
 __pycache__/
+__pycache__/*
 
 # Ignore my scratch pad
 test.py
