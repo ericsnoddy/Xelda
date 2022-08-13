@@ -8,6 +8,7 @@ from enemy import Enemy
 from support import *
 from weapon import Weapon
 from ui import UI
+from particles import AnimationPlayer
 from debug import debug
 
 
@@ -31,6 +32,9 @@ class Level:
 
         # User Interface
         self.ui = UI()
+
+        # particles
+        self.animation_player = AnimationPlayer()
 
     def create_map(self):
         # From our support.py methods we generate dictionaries of map data
@@ -76,7 +80,7 @@ class Level:
                             Tile((x,y), [self.visible_sprites, self.obstacle_sprites], "object", object_surface)
                         if tile_style == "entity":
                             # An entity Tile is collidable and visible
-                            if col == '394':  # this tile number is from Tiled editor, in csv file
+                            if col == '394':  # this tile number is from Tiled level editor, in csv file
                             # HERE IS OUR PLAYER ENTITY drawn on top of all but enemies
                             # Python FYI: we are passing the function create_attack(), not calling it, so no '( )'
                             # This is so Player() has access to Weapon(), but both remain a sub-routine of Level()
@@ -88,7 +92,7 @@ class Level:
                                     self.create_magic
                                 )
                             else:
-                                if col == '390': enemy_name = 'bamboo'
+                                if col == '390': enemy_name = 'bamboo'   # Numeric labels are from level editor csv output
                                 elif col == '391': enemy_name = 'spirit'
                                 elif col == '392': enemy_name ='raccoon'
                                 else: enemy_name = 'squid'
@@ -122,10 +126,12 @@ class Level:
                     # Iterate list of collisions
                     for target in collision_sprites:
                         if target.sprite_type == 'flora':
+                            # spawn particles
+                            self.animation_player.create_flora_particles(target.rect.center, [self.visible_sprites])
                             target.kill()
-                        # Could differentiate, but for now all other attackables are "else"
+                        # Could differentiate enemies, but for now all other attackables are "else"
                         else:
-                            # 'attack' sprite from beginning if statement
+                            # 'attack' sprite from the key of 1st for-loop
                             target.receive_damage(self.player, attack.sprite_type)
 
     def damage_player(self, amount, attack_type):
@@ -134,21 +140,21 @@ class Level:
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
 
-            #spawn particles    
+            #spawn particles
 
     def run(self):
-        # Draw and update with custom draw; no args needed for update because we already have the display_surface
-        self.visible_sprites.custom_draw(self.player)
-        self.visible_sprites.update()
-        self.visible_sprites.enemy_update(self.player)
-        self.player_attack_logic()
-        self.ui.display_hud(self.player)
+            # Draw and update with custom draw; no args needed for update because we already have the display_surface
+            self.visible_sprites.custom_draw(self.player)
+            self.visible_sprites.update()
+            self.visible_sprites.enemy_update(self.player)
+            self.player_attack_logic()
+            self.ui.display_hud(self.player)
 
-# This custom Group acts as our camera, sorted by Y-coord so we can add a bit of overlap for illusion of depth
-# Y-sorting will help us control drawing order and overlap.
 class YSortedCameraGroup(pygame.sprite.Group):
+# This custom Group acts as our camera, sorted by Y-coord so we can add a bit of overlap for illusion of depth
+# Y-sorting will help us control drawing order and overlap. Study this section; there are some nifty tricks here.
     def __init__(self):
-        # General setup
+        # General setup - Because we're customizing, we don't pass groups into the __init__()
         super().__init__()
         self.display_surface = pygame.display.get_surface()
 
@@ -171,13 +177,14 @@ class YSortedCameraGroup(pygame.sprite.Group):
         floor_offset_pos = self.floor_rect.topleft - self.offset
         self.display_surface.blit(self.floor_image, floor_offset_pos)
 
-        # Sorts the sprites by default by their centery position using a lambda function for the key
+        # Sorts the sprites by default by their center-y position using a lambda function for the key
         for sprite in sorted(self.sprites(), key = lambda sprite: sprite.rect.centery):
             # Offsetting our sprites from the display surface acts as our centering camera.
             offset_pos = sprite.rect.topleft - self.offset
             self.display_surface.blit(sprite.image, offset_pos)
 
     def enemy_update(self, player):
+        # This is one helluva line of code; this is to ignore sprites without a specific 'enemy' attribute (performance)
         enemy_sprites = [sprite for sprite in self.sprites() if hasattr(sprite, 'sprite_type') and sprite.sprite_type == 'enemy']
         for enemy in enemy_sprites:
             enemy.enemy_update(player)
