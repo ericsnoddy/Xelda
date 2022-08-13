@@ -223,12 +223,21 @@ class Player(Entity):
         weapon_damage = weapon_dict[self.weapon]['damage']
         return base_damage + weapon_damage
 
+    def energy_recovery(self):
+        if self.energy < self.stats['maxenergy']:
+            # Remember this is 60x per second; trial and error to adjust
+            self.energy += 0.015
+        else:
+            # In case our energy ends up greater than maxenergy, we need to set to max
+            self.energy = self.stats['maxenergy']
+
     def update(self):
         self.key_input()
         self.cooldowns()
         self.get_status()
         self.animate()
         self.move(self.speed)
+        self.energy_recovery()
 
 
         

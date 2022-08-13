@@ -9,6 +9,7 @@ from support import *
 from weapon import Weapon
 from ui import UI
 from particles import AnimationPlayer
+from magic import MagicPlayer
 from debug import debug
 
 
@@ -35,6 +36,7 @@ class Level:
 
         # particles
         self.animation_player = AnimationPlayer()
+        self.magic_player = MagicPlayer(self.animation_player)
 
     def create_map(self):
         # From our support.py methods we generate dictionaries of map data
@@ -113,8 +115,11 @@ class Level:
             self.current_attack.kill()
         self.current_attack = None
 
-    def create_magic(self):        
-        pass
+    def create_magic(self, style, strength, cost):        
+        if style == 'heal':
+            self.magic_player.heal(self.player, strength, cost, [self.visible_sprites])
+        if style == 'flame':
+            self.magic_player.flame(self.player, strength, cost, [self.visible_sprites, self.attackable_sprites])
 
     def player_attack_logic(self):
         # ignore if there are no attack sprites
