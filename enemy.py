@@ -5,7 +5,7 @@ from support import *
 from particles import AnimationPlayer
 
 class Enemy(Entity):
-    def __init__(self, enemy_name, position, groups, obstacle_sprites, damage_player, trigger_death_particles):
+    def __init__(self, enemy_name, position, groups, obstacle_sprites, damage_player, trigger_death_particles, reward_player):
 
         # general setup
         super().__init__(groups)
@@ -33,6 +33,9 @@ class Enemy(Entity):
         self.attack_radius = enemy_info['attack_radius']
         self.notice_radius = enemy_info['notice_radius']
         self.attack_type = enemy_info['attack_type']
+
+        # Experience
+        self.reward_player = reward_player  # This object is a passed function from level.py
 
         # player interaction / cooldown timer
         self.can_attack = True
@@ -145,7 +148,7 @@ class Enemy(Entity):
                 self.health -= player.get_full_weapon_damage() 
             else:
                 # magic damage
-                pass
+                self.health -= player.get_full_magic_damage()
         
         # timer stuff
         self.hit_time = pygame.time.get_ticks()
@@ -164,6 +167,9 @@ class Enemy(Entity):
             # kill() removes the sprite from the sprite group and that's it; apparently it still has a position before draw update
             self.kill()
             self.trigger_death_particles(self.rect.center, self.enemy_name)
+
+            # reward the player
+            self.reward_player(self.exp)
 
     def update(self):
         self.hit_reaction()  # recoil

@@ -103,7 +103,8 @@ class Level:
                                     [self.visible_sprites, self.attackable_sprites], 
                                     self.obstacle_sprites,
                                     self.damage_player,  # Don't add () when passing functions
-                                    self.trigger_death_particles
+                                    self.trigger_death_particles,
+                                    self.reward_player
                                 )
 
     def create_attack(self):
@@ -115,17 +116,17 @@ class Level:
             self.current_attack.kill()
         self.current_attack = None
 
-    def create_magic(self, style, strength, cost):        
+    def create_magic(self, style, cost, strength):        
         if style == 'heal':
-            self.magic_player.heal(self.player, strength, cost, [self.visible_sprites])
+            self.magic_player.heal(self.player, cost, strength, [self.visible_sprites])
         if style == 'flame':
-            self.magic_player.flame(self.player, strength, cost, [self.visible_sprites, self.attackable_sprites])
+            self.magic_player.flame(self.player, cost, strength, [self.visible_sprites, self.attacking_sprites])
 
     def player_attack_logic(self):
         # ignore if there are no attack sprites
         if self.attacking_sprites:
             for attack in self.attacking_sprites:
-                # 3rd arg is DOKILL; False b/c we have further logic before deciding that
+                # 3rd arg is DOKILL; False b/c we have further instructions before killing
                 collision_sprites = pygame.sprite.spritecollide(attack, self.attackable_sprites, False)
                 # If any collisions occur...
                 if collision_sprites:
@@ -137,7 +138,7 @@ class Level:
                             for _ in range(randint(3,5)): # iterate (spawn leafs) 2-4 times
                                 self.animation_player.create_flora_particles(position, [self.visible_sprites])
                             target.kill()
-                        # Could differentiate enemies, but for now all other attackables are "else"
+                        # Could differentiate enemy reactions, but for now all other attackables are "else"
                         else:
                             # 'attack' sprite from the key of 1st for-loop
                             target.receive_damage(self.player, attack.sprite_type)
@@ -151,6 +152,9 @@ class Level:
 
     def trigger_death_particles(self, position, particle_type):
         self.animation_player.create_particles(position, particle_type, self.visible_sprites)
+
+    def reward_player(self, amount):
+        self.player.exp += amount
 
     def run(self):
             # Draw and update with custom draw; no args needed for update because we already have the display_surface

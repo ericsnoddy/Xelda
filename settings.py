@@ -42,7 +42,7 @@ weapon_dict = {
     'sai': {'cooldown': 80, 'damage': 10, 'graphic': path.join("graphics", "weapons", "sai", "full.png")}
 }
 magic_dict = {
-    'flame': { 'strength': 5, 'cost': 20, 'graphic': path.join("graphics", "particles", "flame", "flame.png")},
+    'flame': { 'strength': 7, 'cost': 20, 'graphic': path.join("graphics", "particles", "flame", "flame.png")},
     'heal': { 'strength': 20, 'cost': 10, 'graphic': path.join("graphics", "particles", "heal", "heal.png")}
 }
 enemy_dict = {

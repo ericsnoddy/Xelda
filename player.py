@@ -25,9 +25,12 @@ class Player(Entity):
 
         # PLAYER STATS
         self.stats = { 'maxhealth': 100, 'maxenergy': 100, 'attack': 10, 'magic': 4, 'speed': 5 }
+            # Cannot level up further
+        self.max_stats = { 'maxhealth': 300, 'maxenergy': 140, 'attack': 20, 'magic': 10, 'speed': 10 }
+        self.upgrade_cost = { 'health': 100, 'energy': 100, 'attack': 100, 'magic': 100, 'speed': 100 }
         self.health = self.stats['maxhealth']
         self.energy = self.stats['maxenergy']
-        self.exp = 1130
+        self.exp = 500        
             # self.speed is a scalar velocity we will multiply with the direction vector
         self.speed = self.stats['speed']
 
@@ -223,10 +226,15 @@ class Player(Entity):
         weapon_damage = weapon_dict[self.weapon]['damage']
         return base_damage + weapon_damage
 
+    def get_full_magic_damage(self):
+        base_damage = self.stats['magic']
+        magic_damage = magic_dict[self.magic]['strength']
+        return base_damage + magic_damage
+
     def energy_recovery(self):
         if self.energy < self.stats['maxenergy']:
             # Remember this is 60x per second; trial and error to adjust
-            self.energy += 0.015
+            self.energy += 0.01
         else:
             # In case our energy ends up greater than maxenergy, we need to set to max
             self.energy = self.stats['maxenergy']
@@ -237,8 +245,5 @@ class Player(Entity):
         self.get_status()
         self.animate()
         self.move(self.speed)
-        self.energy_recovery()
-
-
-        
+        self.energy_recovery()       
 
