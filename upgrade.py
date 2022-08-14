@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+from debug import debug
 
 # This is a complicated couple of classes to create cards over the screen
 # Suggest thorough study to understand everything going on.
@@ -11,10 +12,15 @@ class Upgrade:
             # general setup
         self.player = player
         self.total_attributes = len(player.stats)
+                
             # preload stats data from player.py; listify to make subscriptable
         self.attribute_names = list(player.upgrade_cost.keys())  # 'upgrade_cost' has the labels I desire
         self.max_values = list(player.max_stats.values()) 
         self.upgrade_costs = list(player.upgrade_cost.values())
+            # Each stat can be upgraded 4 times
+        self.upgrade_increment_dict = { 'health': 50, 'energy': 10, 'attack': 4, 'magic': 3, 'speed': 2 }
+        self.upgrade_increments = list(self.upgrade_increment_dict.values())
+
         self.font = pygame.font.Font(HUD_FONT, HUD_FONT_SIZE)
 
             # screen item dimensions
@@ -49,6 +55,7 @@ class Upgrade:
             if keys[weapon_attack_key]:
                 self.can_highlight = False
                 self.selection_time = pygame.time.get_ticks()
+                self.try_upgrade(self.player)  # No need to pass selection_index
                 
     def selection_cooldown(self):
         if not self.can_highlight:
@@ -73,6 +80,26 @@ class Upgrade:
             item = Item(left, top, self.card_width, self.card_height, index, self.font)
             self.item_list.append(item)
 
+    ## BROKEN ##
+    ## I need to edit player stats but there's like a mix of player.stat and player.stats{dict}
+    ## Do I increment self.speed AND self.stats['speed']?
+    def try_upgrade(self, player):
+        # upgrade data from __init__
+        i = self.selection_index
+        attribute = self.attribute_names[i]
+        upgrade_cost = self.upgrade_costs[i]
+        max_value = self.max_values[i]
+        increment = self.upgrade_increments[i]
+
+        if upgrade_cost <= player.exp and player.stats[attribute] + increment <= max_value:
+            player.exp -= upgrade_cost
+            # match attribute:
+            #     case:
+
+                # Full heal takes care of vanishing health bar
+            if attribute == 'health':
+                player.health = player.stats['health']
+
     def display(self, player):
         self.input()
         self.selection_cooldown()
@@ -89,6 +116,12 @@ class Upgrade:
 class Item:
     def __init__(self, left, top, width, height, index, font):
         self.rect = pygame.Rect(left, top, width, height)
+            # Copy and transform rect to smaller version for bar
+        self.bar_rect = self.rect.copy()        
+        self.bar_rect.width *= 0.3
+        self.bar_rect.height *= 0.8
+        self.bar_rect.center = self.rect.center
+        
         self.index = index
         self.font = font
 
@@ -97,7 +130,7 @@ class Item:
 
         # title
         title_surf = self.font.render(attribute, False, color)
-        title_rect = title_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,20))
+        title_rect = title_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,20))        
 
         # cost [we int() just in case of weird float like 100.00000000001]
         cost_surf = self.font.render(f"cost: {int(cost)}", False, color)
@@ -107,14 +140,24 @@ class Item:
         display_surface.blit(title_surf, title_rect)
         display_surface.blit(cost_surf, cost_rect)
 
-    def display_bar(self, display_surface, value, max_value, is_selected):
-        # drawing setup
-        color = BAR_COLOR_SELECTED if is_selected else BAR_COLOR
-        top = 0
-        bottom = 0
-        
+    def display_bar(self, display_surface, attribute, value, max_value, is_selected):
+        # drawing setup / style choices
+        bg_color = BAR_COLOR_SELECTED if is_selected else BAR_COLOR
+        bar_color = HEALTH_COLOR if attribute in ['health', 'attack', 'speed'] else ENERGY_COLOR
 
-        # ratio current level to max level
+        pygame.draw.rect(display_surface, bg_color, self.bar_rect)
+        pygame.draw.rect(display_surface, HUD_BORDER_COLOR, self.bar_rect, 4)
+
+        # ratio current level to max levels
+        ratio = 1 - value / max_value
+        top_offset = self.bar_rect.height * ratio  # This amount I add as Vector2(0,y)
+
+        top = self.bar_rect.midtop + pygame.math.Vector2(0,top_offset)
+        bottom = self.bar_rect.midbottom
+        width = self.bar_rect.width - 8
+        pygame.draw.line(display_surface, bar_color, top, bottom, width)
+
+        # pygame.draw.rect(display_surface, bar_color, self.gauge_rect)
 
     def display(self, display_surface, selection_num, attribute, value, max_value, cost):
         if self.index == selection_num:
@@ -125,12 +168,4 @@ class Item:
             pygame.draw.rect(display_surface, HUD_BORDER_COLOR, self.rect, 4)
                                                                 # creates a boolean
         self.display_labels(display_surface, attribute, cost, self.index == selection_num)
-        self.display_bar(display_surface, value, max_value, self.index == selection_num)
-
-"""
-HUD_BG_COLOR
-TEXT_COLOR_SELECTED = "#111111"
-BAR_COLOR = "#EEEEEE"
-BAR_COLOR_SELECTED = "#EEEEEE"
-
-"""
+        self.display_bar(display_surface, attribute, value, max_value, self.index == selection_num)

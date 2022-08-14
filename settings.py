@@ -42,7 +42,7 @@ ENERGY_COLOR = 'blue'
 # Upgrade menu
 TEXT_COLOR_SELECTED = "#111111"
 BAR_COLOR = "#EEEEEE"
-BAR_COLOR_SELECTED = "#EEEEEE"
+BAR_COLOR_SELECTED = "#111111"
 UPGRADE_BG_COLOR_SELECTED = "#EEEEEE"
 
 # Other data is here when importing is more convenient than passing through Classes and functions

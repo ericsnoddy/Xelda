@@ -84,8 +84,8 @@ class UI:
         self.display_surface.blit(magic_surf, magic_rect)
 
     def display_hud(self, player):
-        self.show_bar(player.health, player.stats['maxhealth'], self.healthbar_rect, HEALTH_COLOR)
-        self.show_bar(player.energy, player.stats['maxenergy'], self.energybar_rect, ENERGY_COLOR)
+        self.show_bar(player.health, player.stats['health'], self.healthbar_rect, HEALTH_COLOR)
+        self.show_bar(player.energy, player.stats['energy'], self.energybar_rect, ENERGY_COLOR)
         self.show_exp(player.exp)
         self.magic_overlay(player.magic_index, not player.can_switch_magic)
         self.weapon_overlay(player.weapon_index, not player.can_switch_weapon)

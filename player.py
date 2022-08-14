@@ -24,13 +24,13 @@ class Player(Entity):
         self.status = 'down'
 
         # PLAYER STATS
-        self.stats = { 'maxhealth': 100, 'maxenergy': 100, 'attack': 10, 'magic': 4, 'speed': 5 }
+        self.stats = { 'health': 100, 'energy': 100, 'attack': 10, 'magic': 4, 'speed': 5 }
             # Cannot level up further
-        self.max_stats = { 'maxhealth': 300, 'maxenergy': 140, 'attack': 20, 'magic': 10, 'speed': 10 }
+        self.max_stats = { 'health': 300, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 11 }
         self.upgrade_cost = { 'health': 100, 'energy': 100, 'attack': 100, 'magic': 100, 'speed': 100 }
-        self.health = self.stats['maxhealth']
-        self.energy = self.stats['maxenergy']
-        self.exp = 500        
+        self.health = self.stats['health']
+        self.energy = self.stats['energy']
+        self.exp = 500000
             # self.speed is a scalar velocity we will multiply with the direction vector
         self.speed = self.stats['speed']
 
@@ -233,12 +233,12 @@ class Player(Entity):
         return base_damage + magic_damage
 
     def energy_recovery(self):
-        if self.energy < self.stats['maxenergy']:
+        if self.energy < self.stats['energy']:
             # Remember this is 60x per second; trial and error to adjust
             self.energy += 0.01
         else:
-            # In case our energy ends up greater than maxenergy, we need to set to max
-            self.energy = self.stats['maxenergy']
+            # In case our energy ends up greater than energy, we need to set to max
+            self.energy = self.stats['energy']
 
     def update(self):
         self.key_input()

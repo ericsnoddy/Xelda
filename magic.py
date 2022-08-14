@@ -10,11 +10,11 @@ class MagicPlayer:
 
     def heal(self, player, cost, strength, groups):
         # Do we have enough energy to cast? Also, do nothing if we are at full health already
-        if player.energy >= cost and player.health < player.stats['maxhealth']:
+        if player.energy >= cost and player.health < player.stats['health']:
             # We don't want to heal more than max HP...
             new_HP = player.health + strength
-            if new_HP > player.stats['maxhealth']:
-                player.health = player.stats['maxhealth']
+            if new_HP > player.stats['health']:
+                player.health = player.stats['health']
             else:
                 player.health = new_HP
             player.energy -= cost
