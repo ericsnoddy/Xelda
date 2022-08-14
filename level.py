@@ -10,8 +10,7 @@ from weapon import Weapon
 from ui import UI
 from particles import AnimationPlayer
 from magic import MagicPlayer
-from debug import debug
-
+from upgrade import Upgrade
 
 class Level:
     def __init__(self):
@@ -34,6 +33,7 @@ class Level:
 
         # User Interface
         self.ui = UI()
+        self.upgrade = Upgrade(self.player)
 
         # particles
         self.animation_player = AnimationPlayer()
@@ -166,8 +166,8 @@ class Level:
         self.ui.display_hud(self.player)
 
         if self.game_paused:
-            pass
-            # Display upgrade GUI # Do not update sprites
+            # Display upgrade GUI; do not update sprites. see upgrade.py
+            self.upgrade.display(self.player)            
         else:
             # Draw and update with custom draw; no args needed for update because we already have the display_surface            
             self.visible_sprites.update()

@@ -8,3 +8,8 @@ __pycache__/*
 # Ignore my scratch pad
 test.py
 .gitattributes
+__pycache__/enemy.cpython-310.pyc
+__pycache__/level.cpython-310.pyc
+__pycache__/particles.cpython-310.pyc
+__pycache__/player.cpython-310.pyc
+__pycache__/settings.cpython-310.pyc

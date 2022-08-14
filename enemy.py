@@ -132,7 +132,9 @@ class Enemy(Entity):
             self.image.set_alpha(255)  # Full opaque
 
     def cooldown(self):
+            # Start the stopwatch
         current_time = pygame.time.get_ticks()
+
         if not self.can_attack:            
             if current_time - self.attack_time >= self.attack_cooldown:
                 self.can_attack = True

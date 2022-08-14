@@ -1,18 +1,17 @@
-from pygame import key
+from pygame.locals import *
 from os import path
 
-
-# Set Controls - Use key_code() with description (for readability). Could also import pygame.locals for key constants; if so
-# see pygame.key.get_pressed() doc for list: http://www.pygame.org/docs/ref/key.html#pygame.key.get_pressed
-up_key = key.key_code('up')
-down_key = key.key_code('down')
-left_key = key.key_code('left')
-right_key = key.key_code('right')
-weapon_attack_key = key.key_code('space')
-magic_cast_key = key.key_code('left control')
-cycle_weapon_key = key.key_code('e')
-cycle_magic_key = key.key_code('q')
-upgrade_gui_key = key.key_code('tab')
+# Edit playe controls
+# For a list of pygame key constants see http://www.pygame.org/docs/ref/key.html#pygame.key.get_pressed
+up_key = K_UP
+down_key = K_DOWN
+left_key = K_LEFT
+right_key = K_RIGHT
+weapon_attack_key = K_SPACE
+magic_cast_key = K_LCTRL
+cycle_weapon_key = K_e
+cycle_magic_key = K_q
+pause_and_upgrade_key = K_TAB
 
 # game setup
 WIDTH    = 1280	
@@ -39,6 +38,12 @@ TEXT_COLOR = "#EEEEEE"
 HUD_BORDER_COLOR_ACTIVE = 'gold'
 HEALTH_COLOR = 'red'
 ENERGY_COLOR = 'blue'
+
+# Upgrade menu
+TEXT_COLOR_SELECTED = "#111111"
+BAR_COLOR = "#EEEEEE"
+BAR_COLOR_SELECTED = "#EEEEEE"
+UPGRADE_BG_COLOR_SELECTED = "#EEEEEE"
 
 # Other data is here when importing is more convenient than passing through Classes and functions
 # Acts like global data once imported

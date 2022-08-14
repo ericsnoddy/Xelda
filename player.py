@@ -85,19 +85,6 @@ class Player(Entity):
             keys = pygame.key.get_pressed()
             
             # Player controls are editable in settings.py
-            """
-             = key.key_code('up')
-             = key.key_code('down')
-             = key.key_code('left')
-             = key.key_code('right')
-             = key.key_code('space')
-             = key.key_code('left control')
-             = key.key_code('e')
-             = key.key_code('q')
-             = key.key_code('tab')
-            
-            """
-
             # Movement input
             if keys[up_key]:
                 self.direction.y = -1
