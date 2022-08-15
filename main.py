@@ -33,7 +33,7 @@ class Game:
                     if event.key == pause_and_upgrade_key: # from settings.py
                         self.level.upgrade_GUI()
 
-            # black background
+             # black background
             self.DISPLAY.fill('black')
 
             # Run our initial ized level
