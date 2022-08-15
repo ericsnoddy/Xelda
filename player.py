@@ -11,7 +11,7 @@ class Player(Entity):
         super().__init__(groups)
 
         # Our inherited class requires self.image and self.rect
-        self.image = pygame.image.load(path.join("graphics", "test", "player.png")).convert_alpha()
+        self.image = pygame.image.load(path.join("graphics", "player", "down_idle", "idle_down.png")).convert_alpha()
         self.rect = self.image.get_rect(topleft = position)
 
         # Our hitbox will be slightly smaller than the player rect; overlap provides illusion of depth
@@ -24,15 +24,19 @@ class Player(Entity):
         self.status = 'down'
 
         # PLAYER STATS
-        self.stats = { 'health': 100, 'energy': 100, 'attack': 10, 'magic': 4, 'speed': 5 }
+        self.stats = { 'health': 200, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5 }
             # Cannot level up further
-        self.max_stats = { 'health': 300, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 11 }
+        self.max_stats = { 'health': 400, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 7 }
         self.upgrade_cost = { 'health': 100, 'energy': 100, 'attack': 100, 'magic': 100, 'speed': 100 }
         self.health = self.stats['health']
         self.energy = self.stats['energy']
         self.exp = 500000
             # self.speed is a scalar velocity we will multiply with the direction vector
         self.speed = self.stats['speed']
+
+        # This is a float that increments by 0.02 or so 60x a second to make an int
+        # It's for energy_recovery_gizmo() method I wrote
+        self.energy_refill_gizmo = 0.0
 
         # We use a cooldown timer in milliseconds to avoid key spamming 60x per second.
         self.attacking = False
@@ -234,11 +238,19 @@ class Player(Entity):
 
     def energy_recovery(self):
         if self.energy < self.stats['energy']:
-            # Remember this is 60x per second; trial and error to adjust
-            self.energy += 0.01
+            # In order to ensure player.energy remains an int() I use a "gizmo"
+            self.energy += self.energy_recovery_gizmo()
+
+    def energy_recovery_gizmo(self):
+        # I need a gradual counter from 0 to 1 b/c these methods run 60x a second
+        # But I don't want my stat to be a float
+        # I wrote this gizmo that only increments by 1 when a threshold is reached.
+        self.energy_refill_gizmo += 0.02
+        if round(self.energy_refill_gizmo) == 1:
+            self.energy_refill_gizmo = 0.0
+            return 1
         else:
-            # In case our energy ends up greater than energy, we need to set to max
-            self.energy = self.stats['energy']
+            return 0
 
     def update(self):
         self.key_input()

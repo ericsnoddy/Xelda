@@ -11,13 +11,14 @@ class MagicPlayer:
     def heal(self, player, cost, strength, groups):
         # Do we have enough energy to cast? Also, do nothing if we are at full health already
         if player.energy >= cost and player.health < player.stats['health']:
+                # player.energy getting turned into float somewhere and I don't know why
+            player.energy -= cost
             # We don't want to heal more than max HP...
             new_HP = player.health + strength
             if new_HP > player.stats['health']:
                 player.health = player.stats['health']
             else:
                 player.health = new_HP
-            player.energy -= cost
 
             # aura is an effect for all spell casts, heal is the particular effect (offset puts heal anim above player's head)
             self.animation_player.create_particles(player.rect.center, 'aura', groups)

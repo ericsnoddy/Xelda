@@ -18,7 +18,7 @@ class Upgrade:
         self.max_values = list(player.max_stats.values()) 
         self.upgrade_costs = list(player.upgrade_cost.values())
             # Each stat can be upgraded 4 times
-        self.upgrade_increment_dict = { 'health': 50, 'energy': 10, 'attack': 4, 'magic': 3, 'speed': 2 }
+        self.upgrade_increment_dict = { 'health': 50, 'energy': 20, 'attack': 4, 'magic': 3, 'speed': 0.5 }
         self.upgrade_increments = list(self.upgrade_increment_dict.values())
 
         self.font = pygame.font.Font(HUD_FONT, HUD_FONT_SIZE)
@@ -80,9 +80,6 @@ class Upgrade:
             item = Item(left, top, self.card_width, self.card_height, index, self.font)
             self.item_list.append(item)
 
-    ## BROKEN ##
-    ## I need to edit player stats but there's like a mix of player.stat and player.stats{dict}
-    ## Do I increment self.speed AND self.stats['speed']?
     def try_upgrade(self, player):
         # upgrade data from __init__
         i = self.selection_index
@@ -92,13 +89,22 @@ class Upgrade:
         increment = self.upgrade_increments[i]
 
         if upgrade_cost <= player.exp and player.stats[attribute] + increment <= max_value:
+            # Reduce exp points
             player.exp -= upgrade_cost
-            # match attribute:
-            #     case:
 
-                # Full heal takes care of vanishing health bar
+            # Increment stats dicionary but also individual stats for 3 of the attributes
+            # health and energy upgrades replensih bars to avoid vanishing health/energy
             if attribute == 'health':
+                player.stats['health'] += increment
                 player.health = player.stats['health']
+            elif attribute == 'energy':
+                player.stats['energy'] += increment
+                player.energy = player.stats['energy']                
+            elif attribute == 'speed':
+                player.stats['speed'] += increment
+                player.speed = player.stats['speed']
+            else:
+                player.stats[attribute] += increment
 
     def display(self, player):
         self.input()
@@ -107,7 +113,7 @@ class Upgrade:
         for index, item in enumerate(self.item_list):
                 # get attributes from player (passed into __init__)
                 # First I listify the dict, sort by keys() or values() to make subscriptable
-            attribute = self.attribute_names[index]  # We have this already from __init__
+            attribute = self.attribute_names[index]  # from __init__
             value = list(player.stats.values())[index]
             max_value = self.max_values[index]
             cost = self.upgrade_costs[index]

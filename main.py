@@ -15,7 +15,7 @@ class Game:
         # Initiate the clock for clock.tick(FPS)
         self.clock = pygame.time.Clock()
 
-        # Initiate the level to pass to the game event loop
+        # Initiate our Level class to pass to the game event loop
         self.level = Level()
 
     def run(self):
@@ -24,7 +24,7 @@ class Game:
             # Event loop
             # Pygame records every 'event' per loop, such as key presses and mouse clicks
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # 'X'-out or ALT-F4
                     pygame.quit()
                     sys.exit()
 

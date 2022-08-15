@@ -11,6 +11,7 @@ from ui import UI
 from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
+from debug import debug
 
 class Level:
     def __init__(self):
@@ -90,7 +91,7 @@ class Level:
                                 self.player = Player((x,y),
                                     [self.visible_sprites],
                                     self.obstacle_sprites, 
-                                    self.create_attack_func,   # Don't add () when passing functions
+                                    self.create_attack_func,   # Don't add () when passing functions;
                                     self.destroy_attack_func,  # () calls the function, not what we want
                                     self.create_magic_func
                                 )
@@ -164,18 +165,16 @@ class Level:
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display_hud(self.player)
+        debug(self.player.rect.center) 
 
         if self.game_paused:
             # Display upgrade GUI; do not update sprites. see upgrade.py
-            self.upgrade.display(self.player)            
+            self.upgrade.display(self.player)     
         else:
             # Draw and update with custom draw; no args needed for update because we already have the display_surface            
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
-            self.player_attack_logic()
-
-
-            
+            self.player_attack_logic()  
 
 class YSortedCameraGroup(pygame.sprite.Group):
 # This custom Group acts as our camera, sorted by Y-coord so we can add a bit of overlap for illusion of depth
