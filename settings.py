@@ -1,8 +1,7 @@
-from pygame import mixer
 from pygame.locals import *
 from os import path
 
-# Edit playe controls
+# Edit player controls
 # For a list of pygame key constants see http://www.pygame.org/docs/ref/key.html#pygame.key.get_pressed
 up_key = K_UP
 down_key = K_DOWN
@@ -23,6 +22,11 @@ HEIGHT   = 720
 FPS      = 60
 TILESIZE = 64
 
+# volume
+BG_MUSIC_VOL = 0.2
+SFX_VOL = 0.4
+SWORD_VOL = 0.2
+
 # HUD
 BAR_HEIGHT = 25
 HEALTH_BAR_WIDTH = 375
@@ -33,8 +37,16 @@ ITEM_BOX_SIZE = 80
 HUD_FONT = path.join("graphics", "font", "joystix.ttf")
 HUD_FONT_SIZE = 18
 
+# Hitbox offset. These tweaks make it easier to navigate the world
+HITBOX_Y_OFFSET = {
+    'player': -26,
+    'object': -55,
+    'flora': -12,
+    'invisible': 0
+}
+
 # General colors
-WATER_COLOR = "#71DDEE"
+OCEAN_COLOR = "#71DDEE"
 HUD_BG_COLOR = "#222222"
 HUD_BORDER_COLOR = "#111111"
 TEXT_COLOR = "#EEEEEE"
@@ -48,6 +60,9 @@ TEXT_COLOR_SELECTED = "#111111"
 BAR_COLOR = "#EEEEEE"
 BAR_COLOR_SELECTED = "#111111"
 UPGRADE_BG_COLOR_SELECTED = "#EEEEEE"
+
+# GAME OVER provided by PNGTree
+GAME_OVER = path.join("graphics", "font", "game_over.png")
 
 # Other data is here when importing is more convenient than passing through Classes and functions
 # Acts like global data once imported
@@ -69,14 +84,3 @@ enemy_dict = {
 	'bamboo': {'health': 70,'exp':120,'damage':6,'attack_type': 'leaf_attack', 'attack_sound': path.join("audio", "attack", "slash.wav"), 'speed': 3, 'recoil': 3, 'attack_radius': 50, 'notice_radius': 300}
 }
 
-# Sounds
-mixer.init()
-enemy_death_wav = mixer.Sound(path.join('audio', 'death.wav'))
-cast_flame_wav = mixer.Sound(path.join('audio', 'flame.wav'))
-cast_heal_wav = mixer.Sound(path.join('audio', 'heal.wav'))
-hit_wav = mixer.Sound(path.join('audio', 'hit.wav'))
-sword_wav = mixer.Sound(path.join('audio', 'sword.wav'))
-leaf_wav = mixer.Sound(path.join('audio', 'leaf.wav'))
-claw_wav = mixer.Sound(path.join('audio', 'attack', 'claw.wav'))
-fireball_wav = mixer.Sound(path.join('audio', 'attack', 'fireball.wav'))
-slash_wav = mixer.Sound(path.join('audio', 'attack', 'slash.wav'))

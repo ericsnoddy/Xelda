@@ -15,7 +15,8 @@ class Player(Entity):
         self.rect = self.image.get_rect(topleft = position)
 
         # Our hitbox will be slightly smaller than the player rect; overlap provides illusion of depth
-        self.hitbox = self.rect.inflate(0, -25)
+        # Tweak in the x-dimension makes it a little easier to  navigate obstacles
+        self.hitbox = self.rect.inflate(-6, HITBOX_Y_OFFSET['player']) # dict from settings.py
 
         # Graphics and animations set-up
         self.import_player_assets()    
@@ -24,9 +25,9 @@ class Player(Entity):
         self.status = 'down'
 
         # PLAYER STATS
-        self.stats = { 'health': 150, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5 }
+        self.stats = { 'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5 }
             # Cannot level up further
-        self.max_stats = { 'health': 350, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 7 }
+        self.max_stats = { 'health': 300, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 7 }
             # starting stats
         self.health = self.stats['health']
         self.energy = self.stats['energy']

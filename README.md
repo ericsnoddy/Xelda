@@ -7,8 +7,9 @@ OOP, the ins and outs of passing vars, functions and heritance. Learning about
 animation and sprite/particle manipulation. Setting up a "camera" for a topdown 
 scroller. Working with nested dictionaries/lists. Defining hitboxes and checking 
 collisions. Populating the land with Tiles (via Tiled level editor). And refining 
-the code for playability/response (eg, fix clunky world movement).
-UPDATE: Skipping refinements as I think I've gotten what I wanted out of this demo.
+the code for playability/response (eg, fix clunky world movement). I'm going to 
+leave the game as is -- incredibly unbalanced -- because learning to tweak gameplay 
+was not my goal.
 
 CONTROLS (editable in settings.py):
 

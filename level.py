@@ -1,5 +1,7 @@
 import pygame
 from os import path
+import sys
+import time
 from random import choice, randint
 from settings import *
 from tile import Tile
@@ -20,9 +22,22 @@ class Level:
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
 
-        # BG music / Indefinite loop
+        # BG music / Indefinite loop (settings.py)
         pygame.mixer.music.load(BG_MUSIC)
+        pygame.mixer.music.set_volume(BG_MUSIC_VOL)
         pygame.mixer.music.play(-1)
+
+        # sounds - volume from settings.py
+        self.claw_wav = pygame.mixer.Sound(path.join('audio', 'attack', 'claw.wav'))
+        self.claw_wav.set_volume(SFX_VOL)
+        self.fireball_wav = pygame.mixer.Sound(path.join('audio', 'attack', 'fireball.wav'))
+        self.fireball_wav.set_volume(SFX_VOL)
+        self.slash_wav = pygame.mixer.Sound(path.join('audio', 'attack', 'slash.wav'))
+        self.slash_wav.set_volume(SFX_VOL)
+        self.leaf_wav = pygame.mixer.Sound(path.join('audio', 'leaf.wav'))
+        self.leaf_wav.set_volume(SFX_VOL)
+        self.sword_wav = pygame.mixer.Sound(path.join('audio', 'sword.wav'))
+        self.sword_wav.set_volume(SWORD_VOL)
 
         # Sprite group setup; required by pygame.sprite.Sprite. I customize one as a "camera"
         self.visible_sprites = YSortedCameraGroup()
@@ -35,6 +50,9 @@ class Level:
 
         # Sprite setup
         self.create_map()
+
+        # self-explanatory
+        self.player_dead = False
 
         # User Interface
         self.ui = UI()
@@ -115,7 +133,7 @@ class Level:
 
     def create_attack_func(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites, self.attacking_sprites])
-        pygame.mixer.Sound.play(sword_wav)
+        pygame.mixer.Sound.play(self.sword_wav)
 
     def destroy_attack_func(self):
         if self.current_attack:
@@ -145,7 +163,7 @@ class Level:
                             for _ in range(randint(3,5)): # iterate (spawn leafs) 2-4 times
                                 self.animation_player.create_flora_particles(position, [self.visible_sprites])
                             target.kill()
-                            pygame.mixer.Sound.play(leaf_wav)
+                            pygame.mixer.Sound.play(self.leaf_wav)
                         # Could differentiate enemy reactions, but for now all other attackables are "else"
                         else:
                             # 'attack' sprite from the key of 1st for-loop
@@ -159,14 +177,17 @@ class Level:
                 # create sound
             match attack_type:
                 case 'claw':
-                    pygame.mixer.Sound.play(claw_wav)
+                    pygame.mixer.Sound.play(self.claw_wav)
                 case 'fireball':
-                    pygame.mixer.Sound.play(fireball_wav)
+                    pygame.mixer.Sound.play(self.fireball_wav)
                 case _:
-                    pygame.mixer.Sound.play(slash_wav)
+                    pygame.mixer.Sound.play(self.slash_wav)
 
                 # create particles
             self.animation_player.create_particles(self.player.rect.center, attack_type, [self.visible_sprites])
+
+        if self.player.health <= 0:
+            self.player_dead = True
 
     def trigger_death_particles_func(self, position, particle_type):
         self.animation_player.create_particles(position, particle_type, self.visible_sprites)
@@ -178,18 +199,30 @@ class Level:
         # toggle pause
         self.game_paused = not self.game_paused
 
+    def you_ded(self):
+        game_over_image = pygame.image.load(GAME_OVER).convert_alpha()
+            # Offset because blit is always from topleft but we want center
+        x_offset = game_over_image.get_width() // 2
+        y_offset = game_over_image.get_height() // 2
+        x = self.display_surface.get_size()[0] // 2
+        y = self.display_surface.get_size()[1] // 2
+
+        self.display_surface.blit(game_over_image, (x - x_offset, y - y_offset))
+
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display_hud(self.player)
 
         if self.game_paused:
             # Display upgrade GUI; do not update sprites. see upgrade.py
-            self.upgrade.display(self.player)     
+            self.upgrade.display(self.player)
+        elif self.player_dead:
+            self.you_ded()
         else:
             # Draw and update with custom draw; no args needed for update because we already have the display_surface            
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
-            self.player_attack_logic()  
+            self.player_attack_logic()            
 
 class YSortedCameraGroup(pygame.sprite.Group):
 # This custom Group acts as our camera, sorted by Y-coord so we can add a bit of overlap for illusion of depth

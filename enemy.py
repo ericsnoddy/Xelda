@@ -51,6 +51,12 @@ class Enemy(Entity):
         # particles/animation
         self.trigger_death_particles_func = trigger_death_particles_func
 
+        # sounds
+        self.hit_wav = pygame.mixer.Sound(path.join('audio', 'hit.wav'))
+        self.hit_wav.set_volume(SFX_VOL)
+        self.enemy_death_wav = pygame.mixer.Sound(path.join('audio', 'death.wav'))
+        self.enemy_death_wav.set_volume(SFX_VOL)
+
     def import_graphics(self, name):
         self.animations = { 'idle': [], 'move': [], 'attack': [] }
 
@@ -151,8 +157,8 @@ class Enemy(Entity):
             else:
                 # magic damage
                 self.health -= player.get_full_magic_damage()
-                
-            pygame.mixer.Sound.play(hit_wav)
+
+            pygame.mixer.Sound.play(self.hit_wav)
         
         # timer stuff
         self.hit_time = pygame.time.get_ticks()
@@ -172,7 +178,7 @@ class Enemy(Entity):
             self.kill()
             self.trigger_death_particles_func(self.rect.center, self.enemy_name)
                 # death sound
-            pygame.mixer.Sound.play(enemy_death_wav)
+            pygame.mixer.Sound.play(self.enemy_death_wav)
 
             # reward the player
             self.reward_player_func(self.exp)

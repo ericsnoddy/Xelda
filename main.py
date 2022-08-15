@@ -19,6 +19,7 @@ class Game:
         self.level = Level()
 
     def run(self):
+        self.game_over = False
         # Game loop
         while True:
             # Event loop
@@ -33,14 +34,14 @@ class Game:
                     if event.key == pause_and_upgrade_key: # from settings.py
                         self.level.upgrade_GUI()
 
-             # black background
-            self.DISPLAY.fill('black')
+             # set background to match the surrounding ocean (settings.py), else edge to BG shows
+            self.DISPLAY.fill(OCEAN_COLOR)
 
             # Run our initial ized level
             self.level.run()
 
             # Update the screen for the next frame 
-            pygame.display.update()            
+            pygame.display.update() 
 
             # Tick the clock for the next frame; FPS imported from settings.py
             self.clock.tick(FPS)
