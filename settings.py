@@ -13,6 +13,9 @@ cycle_weapon_key = K_e
 cycle_magic_key = K_q
 pause_and_upgrade_key = K_TAB
 
+# Soundtrack
+BG_MUSIC = path.join("audio", "main.ogg")
+
 # game setup
 WIDTH    = 1280	
 HEIGHT   = 720
