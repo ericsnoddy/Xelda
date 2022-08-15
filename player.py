@@ -27,7 +27,7 @@ class Player(Entity):
         self.stats = { 'health': 200, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5 }
             # Cannot level up further
         self.max_stats = { 'health': 400, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 7 }
-        self.upgrade_cost = { 'health': 100, 'energy': 100, 'attack': 100, 'magic': 100, 'speed': 100 }
+            # starting stats
         self.health = self.stats['health']
         self.energy = self.stats['energy']
         self.exp = 500000
