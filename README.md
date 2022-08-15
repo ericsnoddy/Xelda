@@ -15,4 +15,4 @@ q to cycle magic
 e to cycle weapon
 space to attack and to select upgrade
 left control to cast spell
-tab to pause/open upgrade menu
+tab to pause/open upgrade men
