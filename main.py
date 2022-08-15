@@ -13,7 +13,7 @@ class Game:
         pygame.display.set_caption('Xelda')
 
         # Initiate the clock for clock.tick(FPS)
-        self.clock = pygame.time.Clock()
+        self.clock = pygame.time.Clock()  
 
         # Initiate our Level class to pass to the game event loop
         self.level = Level()
