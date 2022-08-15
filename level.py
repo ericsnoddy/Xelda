@@ -13,7 +13,6 @@ from ui import UI
 from particles import AnimationPlayer
 from magic import MagicPlayer
 from upgrade import Upgrade
-from debug import debug
 
 class Level:
     def __init__(self):

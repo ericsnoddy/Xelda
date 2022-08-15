@@ -1,6 +1,5 @@
 import pygame
 from settings import *
-from debug import debug
 
 # This is a complicated couple of classes to create cards over the screen
 # Suggest thorough study to understand everything going on.

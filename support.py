@@ -1,5 +1,4 @@
 import pygame
-
 from csv import reader
 from os import path, walk
 
