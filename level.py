@@ -20,6 +20,10 @@ class Level:
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
 
+        # BG music / Indefinite loop
+        pygame.mixer.music.load(BG_MUSIC)
+        pygame.mixer.music.play(-1)
+
         # Sprite group setup; required by pygame.sprite.Sprite. I customize one as a "camera"
         self.visible_sprites = YSortedCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
