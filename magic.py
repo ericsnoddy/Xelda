@@ -20,6 +20,9 @@ class MagicPlayer:
             else:
                 player.health = new_HP
 
+            # play sound
+            pygame.mixer.Sound.play(cast_heal_wav)
+
             # aura is an effect for all spell casts, heal is the particular effect (offset puts heal anim above player's head)
             self.animation_player.create_particles(player.rect.center, 'aura', groups)
             self.animation_player.create_particles(player.rect.center + pygame.math.Vector2(0,-60), 'heal', groups)
@@ -28,6 +31,9 @@ class MagicPlayer:
         # Do we have enough energy to cast?
         if player.energy >= cost:
             player.energy -= cost
+
+            # play sound
+            pygame.mixer.Sound.play(cast_flame_wav)
         
             # We need to know which direction to send the flames
             # I use split('_') bc status could be 'right_idle' for example (see player.py)

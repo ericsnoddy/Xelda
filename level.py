@@ -115,6 +115,7 @@ class Level:
 
     def create_attack_func(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites, self.attacking_sprites])
+        pygame.mixer.Sound.play(sword_wav)
 
     def destroy_attack_func(self):
         if self.current_attack:
@@ -144,6 +145,7 @@ class Level:
                             for _ in range(randint(3,5)): # iterate (spawn leafs) 2-4 times
                                 self.animation_player.create_flora_particles(position, [self.visible_sprites])
                             target.kill()
+                            pygame.mixer.Sound.play(leaf_wav)
                         # Could differentiate enemy reactions, but for now all other attackables are "else"
                         else:
                             # 'attack' sprite from the key of 1st for-loop
@@ -154,6 +156,16 @@ class Level:
             self.player.health -= damage
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
+                # create sound
+            match attack_type:
+                case 'claw':
+                    pygame.mixer.Sound.play(claw_wav)
+                case 'fireball':
+                    pygame.mixer.Sound.play(fireball_wav)
+                case _:
+                    pygame.mixer.Sound.play(slash_wav)
+
+                # create particles
             self.animation_player.create_particles(self.player.rect.center, attack_type, [self.visible_sprites])
 
     def trigger_death_particles_func(self, position, particle_type):
@@ -169,7 +181,6 @@ class Level:
     def run(self):
         self.visible_sprites.custom_draw(self.player)
         self.ui.display_hud(self.player)
-        debug(self.player.rect.center) 
 
         if self.game_paused:
             # Display upgrade GUI; do not update sprites. see upgrade.py

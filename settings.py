@@ -1,3 +1,4 @@
+from pygame import mixer
 from pygame.locals import *
 from os import path
 
@@ -67,3 +68,15 @@ enemy_dict = {
 	'spirit': {'health': 100,'exp':110,'damage':8,'attack_type': 'thunder', 'attack_sound': path.join("audio", "attack", "fireball.wav"), 'speed': 4, 'recoil': 3, 'attack_radius': 60, 'notice_radius': 350},
 	'bamboo': {'health': 70,'exp':120,'damage':6,'attack_type': 'leaf_attack', 'attack_sound': path.join("audio", "attack", "slash.wav"), 'speed': 3, 'recoil': 3, 'attack_radius': 50, 'notice_radius': 300}
 }
+
+# Sounds
+mixer.init()
+enemy_death_wav = mixer.Sound(path.join('audio', 'death.wav'))
+cast_flame_wav = mixer.Sound(path.join('audio', 'flame.wav'))
+cast_heal_wav = mixer.Sound(path.join('audio', 'heal.wav'))
+hit_wav = mixer.Sound(path.join('audio', 'hit.wav'))
+sword_wav = mixer.Sound(path.join('audio', 'sword.wav'))
+leaf_wav = mixer.Sound(path.join('audio', 'leaf.wav'))
+claw_wav = mixer.Sound(path.join('audio', 'attack', 'claw.wav'))
+fireball_wav = mixer.Sound(path.join('audio', 'attack', 'fireball.wav'))
+slash_wav = mixer.Sound(path.join('audio', 'attack', 'slash.wav'))

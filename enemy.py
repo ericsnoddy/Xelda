@@ -151,6 +151,8 @@ class Enemy(Entity):
             else:
                 # magic damage
                 self.health -= player.get_full_magic_damage()
+                
+            pygame.mixer.Sound.play(hit_wav)
         
         # timer stuff
         self.hit_time = pygame.time.get_ticks()
@@ -169,6 +171,8 @@ class Enemy(Entity):
             # kill() removes the sprite from the sprite group and that's it; apparently it still has a position before draw update
             self.kill()
             self.trigger_death_particles_func(self.rect.center, self.enemy_name)
+                # death sound
+            pygame.mixer.Sound.play(enemy_death_wav)
 
             # reward the player
             self.reward_player_func(self.exp)

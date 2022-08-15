@@ -24,13 +24,13 @@ class Player(Entity):
         self.status = 'down'
 
         # PLAYER STATS
-        self.stats = { 'health': 200, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5 }
+        self.stats = { 'health': 150, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5 }
             # Cannot level up further
-        self.max_stats = { 'health': 400, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 7 }
+        self.max_stats = { 'health': 350, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 7 }
             # starting stats
         self.health = self.stats['health']
         self.energy = self.stats['energy']
-        self.exp = 500000
+        self.exp = 400
             # self.speed is a scalar velocity we will multiply with the direction vector
         self.speed = self.stats['speed']
 
