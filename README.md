@@ -1,5 +1,5 @@
 # Xelda
-RPG clon, intro to pygame
+RPG clone, intro to pygame
 
 This is my version of a Pygame tutorial RPG. My comments are verbose for learning
 purposes, pardon the clutter. I plan on getting more comfortable with classes and 
