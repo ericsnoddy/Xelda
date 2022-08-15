@@ -14,12 +14,16 @@ class Upgrade:
         self.total_attributes = len(player.stats)
                 
             # preload stats data from player.py; listify to make subscriptable
-        self.attribute_names = list(player.upgrade_cost.keys())  # 'upgrade_cost' has the labels I desire
-        self.max_values = list(player.max_stats.values()) 
-        self.upgrade_costs = list(player.upgrade_cost.values())
-            # Each stat can be upgraded 4 times
+        self.attribute_names = list(player.stats.keys())  # 'upgrade_cost' has the labels I desire
+        self.max_values = list(player.max_stats.values())
+
+            # Upgrade increments and increasing cost schedule per attribute
         self.upgrade_increment_dict = { 'health': 50, 'energy': 20, 'attack': 4, 'magic': 3, 'speed': 0.5 }
         self.upgrade_increments = list(self.upgrade_increment_dict.values())
+        self.upgrade_cost = { 'health': 100, 'energy': 100, 'attack': 100, 'magic': 100, 'speed': 100 }
+        self.upgrade_costs = list(self.upgrade_cost.values())
+            # Price goes up with each upgrade
+        self.COST_MULTIPLIER = 1.7
 
         self.font = pygame.font.Font(HUD_FONT, HUD_FONT_SIZE)
 
@@ -87,10 +91,15 @@ class Upgrade:
         upgrade_cost = self.upgrade_costs[i]
         max_value = self.max_values[i]
         increment = self.upgrade_increments[i]
+        # I looked up the equation to round to nearest 50 and made it a lambda for fun
+        rounder50 = lambda num: 50 * round(num / 50)
 
         if upgrade_cost <= player.exp and player.stats[attribute] + increment <= max_value:
             # Reduce exp points
             player.exp -= upgrade_cost
+
+            # Cost increases with each upgrade
+            self.upgrade_costs[i] = rounder50(self.upgrade_costs[i] * self.COST_MULTIPLIER)
 
             # Increment stats dicionary but also individual stats for 3 of the attributes
             # health and energy upgrades replensih bars to avoid vanishing health/energy
@@ -131,7 +140,7 @@ class Item:
         self.index = index
         self.font = font
 
-    def display_labels(self, display_surface, attribute, cost, is_selected):
+    def display_labels(self, display_surface, attribute, cost, value, max_value, is_selected):
         color = TEXT_COLOR_SELECTED if is_selected else TEXT_COLOR
 
         # title
@@ -144,7 +153,8 @@ class Item:
 
         # draw
         display_surface.blit(title_surf, title_rect)
-        display_surface.blit(cost_surf, cost_rect)
+        if value < max_value:   # Don't blit cost if we can't upgrade further
+            display_surface.blit(cost_surf, cost_rect)
 
     def display_bar(self, display_surface, attribute, value, max_value, is_selected):
         # drawing setup / style choices
@@ -173,5 +183,5 @@ class Item:
             pygame.draw.rect(display_surface, HUD_BG_COLOR, self.rect)
             pygame.draw.rect(display_surface, HUD_BORDER_COLOR, self.rect, 4)
                                                                 # creates a boolean
-        self.display_labels(display_surface, attribute, cost, self.index == selection_num)
+        self.display_labels(display_surface, attribute, cost, value, max_value, self.index == selection_num)
         self.display_bar(display_surface, attribute, value, max_value, self.index == selection_num)
