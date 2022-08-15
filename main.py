@@ -28,8 +28,7 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
-                # We put our upgrade GUI in main because it's a major interrupting overlay
-                # And it's easy to run per event
+                # Pausing the game / upgrade screen
                 if event.type == pygame.KEYDOWN:
                     if event.key == pause_and_upgrade_key: # from settings.py
                         self.level.upgrade_GUI()
