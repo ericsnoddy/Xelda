@@ -25,9 +25,9 @@ class Player(Entity):
         self.status = 'down'
 
         # PLAYER STATS
-        self.stats = { 'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5 }
+        self.stats = { 'health': 200, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 5 }
             # Cannot level up further
-        self.max_stats = { 'health': 300, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 7 }
+        self.max_stats = { 'health': 400, 'energy': 140, 'attack': 26, 'magic': 16, 'speed': 7 }
             # starting stats
         self.health = self.stats['health']
         self.energy = self.stats['energy']
