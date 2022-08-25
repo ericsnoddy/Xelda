@@ -16,7 +16,7 @@ class MagicPlayer:
                 # player.energy getting turned into float somewhere and I don't know why
             player.energy -= cost
             # We don't want to heal more than max HP...
-            new_HP = player.health + strength
+            new_HP = player.health + strength + 25
             if new_HP > player.stats['health']:
                 player.health = player.stats['health']
             else:
